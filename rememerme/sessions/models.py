@@ -1,4 +1,4 @@
-from rememerme.sessions.sessions.util import CassaModel
+from rememerme.sessions.cassa import CassaModel
 from django.db import models
 import pycassa
 from django.conf import settings

@@ -1,4 +1,4 @@
-from models import User
+from rememerme.sessions.models import Session
 from rest_framework import serializers
 
 '''
