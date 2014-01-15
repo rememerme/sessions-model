@@ -5,6 +5,7 @@ from django.conf import settings
 import uuid
 from rest_framework import serializers
 import datetime
+import dateutil.parser
 
 # User model faked to use Cassandra
 POOL = pycassa.ConnectionPool('users', server_list=settings.CASSANDRA_NODES)
@@ -14,8 +15,8 @@ class Session(CassaModel):
     
     session_id = models.TextField(primary_key=True)
     user_id = models.TextField()
-    date_created = models.IntegerField()
-    last_modified = models.IntegerField()
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
 
     '''
         Creates a Session object from a map object with the properties.
@@ -84,17 +85,20 @@ class Session(CassaModel):
     def save(self):
         session_id = uuid.uuid1() if not self.session_id else uuid.UUID(self.session_id)
         Session.table.insert(session_id, CassaSessionSerializer(self).fix_data())
-        self.session_id = session_id
+        self.session_id = str(session_id)
         
 
     def delete(self):
-        Session.table.remove(self.session_id)
+        Session.table.remove(uuid.UUID(self.session_id))
         
 '''
     The User serializer used to create a python dictionary for submitting to the
     Cassandra database with the correct options.
 '''
 class CassaSessionSerializer(serializers.ModelSerializer):
+    date_created = serializers.DateTimeField(format='iso-8601', source='date_created')
+    last_modified = serializers.DateTimeField(format='iso-8601', source='last_modified')
+    
     class Meta:
         model = Session
         fields = ('user_id', 'date_created', 'last_modified')
@@ -102,7 +106,7 @@ class CassaSessionSerializer(serializers.ModelSerializer):
     def fix_data(self):
         data = self.data
         data['user_id'] = uuid.UUID(data['user_id']) 
-        data['date_created'] = datetime.datetime.fromtimestamp(data['date_created'])
-        data['last_modified'] = datetime.datetime.fromtimestamp(data['last_modified'])
+        data['date_created'] = dateutil.parser.parse(data['date_created']) 
+        data['last_modified'] = dateutil.parser.parse(data['last_modified'])
         return data
     
