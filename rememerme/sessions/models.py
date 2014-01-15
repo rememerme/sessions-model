@@ -14,8 +14,8 @@ class Session(CassaModel):
     
     session_id = models.TextField(primary_key=True)
     user_id = models.TextField()
-    date_created = models.DateTimeField(auto_now_add=True, editable=False)
-    last_modified = models.DateTimeField(auto_now=True)
+    date_created = models.IntegerField()
+    last_modified = models.IntegerField()
 
     '''
         Creates a Session object from a map object with the properties.
@@ -99,7 +99,7 @@ class Session(CassaModel):
     '''
     def save(self):
         session_id = uuid.uuid1() if not self.session_id else uuid.UUID(self.session_id)
-        #Session.table.insert(session_id, CassaSessionSerializer(self).fix_data())
+        Session.table.insert(session_id, CassaSessionSerializer(self).fix_data())
         self.session_id = session_id
         
 
@@ -118,7 +118,5 @@ class CassaSessionSerializer(serializers.ModelSerializer):
     def fix_data(self):
         data = self.data
         data['user_id'] = uuid.UUID(data['user_id']) 
-        data['date_created'] = datetime.datetime(data['date_created'])
-        data['last_modified'] = datetime.datetime(data['last_modified']) 
         return data
     
