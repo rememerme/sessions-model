@@ -2,8 +2,8 @@ import requests
 from rememerme.sessions.models import Session
 from rest_framework.exceptions import APIException
 
-class YouDunFucked(APIException):
-	pass
+class SessionClientError(APIException):
+	detail = ''
 
 class SessionClient:
 	@staticmethod
