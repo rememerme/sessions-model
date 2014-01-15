@@ -4,6 +4,7 @@ import pycassa
 from django.conf import settings
 import uuid
 from rest_framework import serializers
+from time import strptime
 
 # User model faked to use Cassandra
 POOL = pycassa.ConnectionPool('users', server_list=settings.CASSANDRA_NODES)
@@ -98,7 +99,7 @@ class Session(CassaModel):
     '''
     def save(self):
         session_id = uuid.uuid1() if not self.session_id else uuid.UUID(self.session_id)
-        Session.table.insert(session_id, CassaSessionSerializer(self).fix_data())
+        #Session.table.insert(session_id, CassaSessionSerializer(self).fix_data())
         self.session_id = session_id
         
 
@@ -117,5 +118,7 @@ class CassaSessionSerializer(serializers.ModelSerializer):
     def fix_data(self):
         data = self.data
         data['user_id'] = uuid.UUID(data['user_id']) 
+        data['date_created'] = datetime.datetime(data['date_created'])
+        data['last_modified'] = datetime.datetime(data['last_modified']) 
         return data
     
