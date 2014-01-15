@@ -55,13 +55,6 @@ class Session(CassaModel):
         return Session.fromCassa((str(session_id), Session.table.get(session_id)))
    
     '''
-
-    '''
-    @staticmethod
-    def filter(user_id=None, last_modified=None, date_created=None)
-        
-
-    '''
         Gets the user by the email.
         
         @param email: The email of the user.
@@ -105,7 +98,7 @@ class Session(CassaModel):
     '''
     def save(self):
         session_id = uuid.uuid1() if not self.session_id else uuid.UUID(self.session_id)
-        Session.table.insert(session_id, CassaSessionSerializer(self).data)
+        Session.table.insert(session_id, CassaSessionSerializer(self).fix_data())
         self.session_id = session_id
         
 
@@ -119,8 +112,10 @@ class Session(CassaModel):
 class CassaSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
-        fields = ('session_id', 'user_id', 'date_created', 'last_modified')
+        fields = ('user_id', 'date_created', 'last_modified')
 
-    
-    
+    def fix_data(self):
+        data = self.data
+        data['user_id'] = uuid.UUID(data['user_id']) 
+        return data
     

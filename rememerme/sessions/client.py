@@ -1,5 +1,5 @@
 import requests
-from rememerme.session.models import Session
+from rememerme.sessions.models import Session
 from rest_framework.exceptions import APIException
 
 class YouDunFucked(APIException):
