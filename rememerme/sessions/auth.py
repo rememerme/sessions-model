@@ -53,7 +53,7 @@ class RememermeAuthentication(authentication.BaseAuthentication):
         try:
             return (AuthUser(SessionClient.update(token).user_id), token)
         except SessionClientError:
-            raise exceptions.AuthenticationFailed("Invalid access_toke. No existing session.")
+            raise exceptions.AuthenticationFailed("Invalid access_token. No existing session.")
         
     def authenticate_header(self, request):
         return 'Rememerme/Token'
