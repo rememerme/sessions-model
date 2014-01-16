@@ -17,12 +17,12 @@ class SessionClient:
     def update(session_id):
         r = requests.put('http://134.53.148.103:8000/rest/v1/%s' % str(session_id))
         if r.status_code is not 200:
-            raise SessionClientError(r.text())
+            raise SessionClientError(r.text)
         return Session.fromMap(r.json())
     
     @staticmethod
     def delete(session_id):
         r = requests.delete('http://134.53.148.103:8000/rest/v1/%s' % str(session_id))
         if r.status_code is not 200:
-            raise SessionClientError(r.text())
+            raise SessionClientError(r.text)
         return Session.fromMap(r.json())

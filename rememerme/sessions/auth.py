@@ -1,6 +1,14 @@
 from rest_framework import authentication, exceptions, HTTP_HEADER_ENCODING
 from rememerme.sessions.client import SessionClientError, SessionClient
 
+class AuthUser:
+    def __init__(self, user_id):
+        self.pk = user_id
+        self.user_id = user_id
+
+    def is_authenticated(self):
+        return True
+
 class RememermeAuthentication(authentication.BaseAuthentication):
     '''
         Custom Rememerme Authentication scheme used for all Django projects.
@@ -43,7 +51,7 @@ class RememermeAuthentication(authentication.BaseAuthentication):
         
         # start the authentication process. If successful returning a tuple
         try:
-            return (SessionClient.update(token).user_id, token)
+            return (AuthUser(SessionClient.update(token).user_id), token)
         except SessionClientError:
             raise exceptions.AuthenticationFailed("Invalid access_toke. No existing session.")
         
