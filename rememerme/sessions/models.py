@@ -4,7 +4,6 @@ import pycassa
 from django.conf import settings
 import uuid
 from rest_framework import serializers
-import datetime
 import dateutil.parser
 
 # User model faked to use Cassandra
@@ -68,13 +67,13 @@ class Session(CassaModel):
     @staticmethod
     def all(limit=settings.REST_FRAMEWORK['PAGINATE_BY'], page=None):
         if not page:
-            return [User.fromCassa(cassRep) for cassRep in User.table.get_range(row_count=limit)]
+            return [Session.fromCassa(cassRep) for cassRep in Session.table.get_range(row_count=limit)]
         else:
             if not isinstance(page, uuid.UUID):
                 page = uuid.UUID(page)
-            gen = User.table.get_range(start=page, row_count=limit + 1)
+            gen = Session.table.get_range(start=page, row_count=limit + 1)
             gen.next()
-            return [User.fromCassa(cassRep) for cassRep in gen]
+            return [Session.fromCassa(cassRep) for cassRep in gen]
     
     '''
         Saves a set of users given by the cassandra in/output, which is
