@@ -51,7 +51,7 @@ class RememermeAuthentication(authentication.BaseAuthentication):
         
         # start the authentication process. If successful returning a tuple
         try:
-            return (AuthUser(SessionClient.update(token).user_id), token)
+            return (AuthUser(SessionClient().update(token).user_id), token)
         except SessionClientError:
             raise exceptions.AuthenticationFailed("Invalid access_token. No existing session.")
         
